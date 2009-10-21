@@ -1,0 +1,512 @@
+2009-11-21  Ullrich Schäfer <ullrich /@/ seidbereit /./ de>
+	
+	* Project
+	Updated to XCode 3.1 project file
+	Replaced vecLib.framework with Accelerate.framework
+	Switched to Intel 64bit
+	
+	* src/SpectrumView.m
+	Updated vecLib method calls.
+
+2003-11-16  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/XYPlotView.m:
+	Fixed trivial scaling bug, something still seems wrong though
+
+	* Info.plist, src/scopeapp_prefix.pch:
+	Added as part of update to XCode
+
+	* src/TraceView.m:
+	Fixed a bug caused by multiple trace-views calling -startSampling
+	on the sampler without calling -stopSampling
+
+	* MacCRO X.pbproj:
+	Updated to XCode
+
+2003-04-25  Philip Derrin  <narge@users.sourceforge.net>
+
+	* English.lproj/ScopeWindow.nib:
+	Made the control window an ordinary non-floating window.
+
+	* src/ScopeController.m (-initWithSamplerClass:),
+	src/ScopeController.h, src/ScopeAppDelegate.m:
+	Make ScopeController take a class of input sampler to create, not an
+	actual input sampler object; this allows the input sampler's error
+	messages to be displayed in a more sensible manner, using a sheet on
+	the scope window.
+
+	* src/PortAudioSampler.m (-initPortAudio, -init, -startSampling,
+	-stopSampling), src/PortAudioSampler.h:
+	Use the new InputErrorHandler protocol in PortAudioSampler; display
+	sensible error messages when an error occurs (rather than just using
+	NSLog).
+
+	* src/InputSampler.h:
+	Add a new InputErrorHandler protocol, containing a function to display
+	error messages and (if necessary) close the input handler and the
+	objects using it.
+
+2003-04-23  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/TraceView.m (-displayRect:, -displayThread:):
+	Moved -updateCaptions call into -displayRect: to fix a crash caused by
+	the display thread updating a caption while it was being drawn.
+
+	* src/portaudio:
+	Updated all files to the current v18-branch version from the PortAudio
+	CVS repository.
+
+2003-02-20  Philip Derrin  <narge@users.sourceforge.net>
+
+	* Released 0.1.2
+
+	* src/TestSampler.m (-createData), src/TestSampler.h:
+	Clean up the test sampler a bit. No more random frequencies, or
+	discontinuities in the wave at boundaries between blocks.
+
+	* src/TraceView.m (-mouseDown:, -savePDFImageToFile:),
+	src/TraceView.h:
+	Move PDF-saving code into a new action method, which is called by
+	-mouseDown. Add -acceptsFirstResponder and -acceptsFirstMouse:,
+	both of which unconditionally return YES.
+
+	* src/SpectrumView.m (-doRealFFTOnData:, -doWindowingOnData:),
+	src/SpectrumView.h:
+	Implemented several windowing functions (Bartlett, Blackman, Hamming,
+	Hann (aka Hanning), Welch). Change scaling again; FFT results are divided
+	by the area of the window function (which is N for the rectangular
+	window). 
+
+2003-02-19  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/SpectrumView.m (vsqrt(float*, int), updateDisplay:):
+	Fixed some more scaling bugs. FFT results are now being scaled by
+	1/N instead of 1/2; this seems to contradict Apple's vDSP docs but
+	gives the correct results (tested with TestSampler).
+
+	* src/SpectrumView.m (-doAccumulationOnData:, -doWindowingOnData:,
+	-changedAccumulationSettings:, -changedWindowingSettings:,
+	-recalculateWindowWithSize:):
+	Implement accumulation and windowing. No actual windowing functions
+	have been added yet, but the framework is done.
+
+	* src/SpectrumView.h:
+	Add outlet for a menu to control windowing; add member variables
+	for accumulation and windowing.
+
+	* src/TraceView.m (-drawRect:): Disable old debugging code
+
+2003-02-18  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/SpectrumView.h, src/SpectrumView.m:
+	Separate the FFT code into a new method that operates on NSData
+	objects; add new methods (currently stubs) for accumulation &
+	windowing
+
+	* src/TraceView.m (-displayThread:):
+	Release and replace the autorelease pool every time around the
+	display thread's loop
+
+2003-02-16  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/TraceView.m (-mouseDown:, -savePanelDidEnd:::):
+	Use sheet method for save panel on OS X. Add callback to write data
+	when sheet finishes. Fix memory leak in non-sheet save panel code.
+
+2003-02-15  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/TraceView.m (-mouseDown:): Save image to a PDF when clicked
+
+2003-02-14  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeView.m (-updateCaptions), src/SpectrumView.m
+	(-updateCaptions), src/XYPlotView.m (-updateCaptions):
+	Implement -updateCaptions to display the current scales if
+	myShowScales is YES
+
+	* src/TraceView.m (-updateCaptions):
+	Implement -updateCaptions to display the current time if myShowTime is
+	YES
+
+	* src/TraceView.h, src/ScopeView.h, src/XYPlotView.h,
+	src/SpectrumView.h:
+	Move myShowTime from specialised classes into TraceView. Add
+	-updateCaptions method and caption outlets to TraceView.
+
+	* src/ScopeController.m (-tabView:didSelectTabViewItem:):
+	When switching TraceViews, insert TraceView at the bottom to make sure
+	the captions are still visible
+
+	* English.lproj/ScopeWindow.nib:
+	Fix a bug with the fine scale sliders in X/Y Plot; add NSTextFields
+	for captions
+
+	* src/SpectrumView.m:
+	Fix a scaling problem in the spectrum analyser
+
+2003-02-06  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/SpectrumView.m (-updateGrid):
+	Fix some bugs in logarithmic grid on Y axis
+
+	* src/TraceView.m (-awakeFromNib), src/SpectrumView.m
+	(-changedFreqScale:, -changedVoltScale:): Call -updateGrid
+
+	* src/ScopeView.m (-updateGrid), src/XYPlotView.m (-updateGrid),
+	src/SpectrumView.m (-updateGrid):
+	Implement functions to draw grids
+	
+	* src/ScopeView.h, src/XYPlotView.h, src/SpectrumView.h:
+	Declarations of -updateControls no longer required (now declared in
+	superclass)
+
+	* src/TraceView.h, src/TraceView.m (-updateGrid, -updateControls,
+	-updateDisplay:):
+	Add stubs of abstract methods in TraceView; these implementations
+	throw exceptions if called
+
+	* src/TraceView.h, src/TraceView.m (-init, -drawRect:):
+	Add an NSBezierPath containing the grid. TracePath isn't used because
+	it doesn't support multiple line segments.
+
+	* Released 0.1.1
+
+	* src/SpectrumView.m (-updateDisplay:): Fixed another silly maths bug;
+	logarithmic Y axis is now the right way up.
+
+2003-02-05  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDefaults.m, src/ScopeAppDefaults.h:
+	New files containing a class to conveniently deal with user prefs.
+	
+	* English.lproj/PrefsPanel.nib:
+	New bundle containing preferences panel interface
+
+	* English.lproj/MainMenu.nib:
+	Enabled preferences menu item; moved Close item to Window menu;
+	added item to bring the control panel to the front
+
+	* src/TraceView.m (-drawRect:): 
+	Use user preferences to select drawing colours.
+
+	* src/ScopeController.h, src/ScopeController.m
+	(orderFrontControlWindow:):
+	New method to bring the control window to the front
+
+	* src/ScopeAppDelegate.h, src/ScopeAppDelegate.m
+	(orderFrontPreferencesPanel:):
+	New method to open the preferences panel
+	
+	* src/SpectrumView.h, src/SpectrumView.m (-updateDisplay:,
+	-changedFreqScale:, -changedVoltScale:):
+	Corrected a number of stupid maths bugs involving logarithmic scales 
+	and calculation of offsets; replaced "scale" and "offset" variables 
+	with more appropriate "to" and "from".
+
+2003-02-01  Philip Derrin  <narge@users.sourceforge.net>
+
+	* Released 0.1.0
+
+	* src/ScopeView.m (-updateControls), src/SpectrumView.m 
+	(-updateControls), src/XYPlotView.m (-updateControls):
+	Implement -updateControls methods to set states from controls
+	before starting to draw
+
+	* src/ScopeController.m (-tabView:didSelectTabViewItem:tabViewItem:):
+	Resize trace views to occupy entire window when switching view, in case
+	it's been resized
+
+2003-01-21  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/SpectrumView.m:
+	Don't include FFTW headers (MacOSX code uses vDSP framework instead)
+
+2003-01-20  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeController.h, src/ScopeController.m: Enable SpectrumView
+
+	* src/SpectrumView.h, src/SpectrumView.m:
+	Initial implementation of spectrum analyser
+
+	* English.lproj/ScopeWindow.nib/classes.nib, English.lproj/ScopeWindow.nib/info.nib, English.lproj/ScopeWindow.nib/objects.nib:
+	Add SpectrumView to main window
+
+	* src/ScopeView.m:
+	Start & stop drawing only when necessary; do not start the drawing
+	thread in UI functions if it wasn't running already
+
+	* src/TraceView.h (-drawing):
+	Add a method that returns YES when this TraceView is drawing
+
+	* src/TraceView.m (-clearData):
+	Fix -clearData: to handle changed buffer sizes.
+
+2003-01-10  Philip Derrin  <narge@users.sourceforge.net>
+
+	* MacCRO X.pbproj/project.pbxproj, src/ScopeView.m, src/TracePath.h,
+	src/TracePath.m, src/TraceView.h, src/TraceView.m, src/XYPlotView.m:
+	Replace NSBezierCurve with TracePath to allow alternative methods of
+	drawing. Currently draws one segment at a time, to work around Quartz
+	performance issue.
+
+2003-01-09  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeView.m, src/TraceView.h, src/TraceView.m, src/XYPlotView.m:
+	Improve handling of changes to display settings; fix possible deadlock
+	in draw thread
+
+2002-12-10  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.h, src/ScopeAppDelegate.m
+	(-orderFrontLicensePanel:):
+	Add code to show license window.
+
+2002-12-08  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeController.m: Added copyright, removed debugging messages.
+
+	* src/TraceView.m (-display):
+	New display method executable as main thread. The call is still commented out (gnustep bug?)
+
+2002-12-07  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeAppGlobals.h:
+	Redefinition of "_" is not necessary on GNUstep. Already in NSBundle.h
+
+2002-12-06  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeController.m:
+	Fixed problems with badly initialised and strangely sized tabs and
+	TabViewItems.
+
+	* src/ScopeView.m:
+	Fixed the problem with badly initialized views in TabViewItems.
+
+	* src/ScopeView.h: Fixed header so it doesn't break OSX.
+
+2002-12-05  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.m (-applicationDidFinishLaunching):
+	Now uses the real sound input by default
+
+	* src/InputSampler.h, src/ScopeView.h, src/ScopeView.m, src/TestSampler.m, src/TraceView.h, src/TraceView.m:
+	InputHandler's processData method now requires interleaved audio data rather
+	than one array per channel (changed all callers)
+
+	* src/PortAudioSampler.m, src/PortAudioSampler.h:
+	Add new InputSampler using the PortAudio library
+
+2002-11-12  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeView.m: Branch broke some stuff. First try at fixing.
+
+2002-10-29  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.h, src/ScopeAppDelegate.m, src/ScopeView.m:
+	Still more gnustep code removed.
+
+	* src/ScopeAppDelegate.m:
+	Removed gnustep-specific code from non-branch revision
+
+	* src/ScopeController.m, src/ScopeView.h, src/ScopeView.m,
+	src/TraceView.m, src/XYPlotView.h, src/XYPlotView.m:
+	Remove gnustep-specific code (will be merged back in when gnustep
+	version works properly)
+
+	* src/ScopeController.m, src/ScopeView.m, src/SpectrumView.h,
+	src/SpectrumView.m:
+	Update implementation of control creation functions (still incomplete!)
+
+	* src/SpectrumView.h, src/SpectrumView.m:
+	Initial checkin of (incomplete) spectrum view code (currently skeleton
+	only)
+
+2002-08-02  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeController.m: Save position of control panel window
+
+2002-07-31  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.m: Remove unnecessary call to -autorelease
+
+	* English.lproj/Localizable.strings, src/ScopeAppDelegate.m:
+	Localise menu items (gnustep only, for now)
+
+2002-07-31  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.m, src/ScopeAppDelegate.h:
+	Added simplest of menus.
+
+2002-07-30  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeView.m, src/TraceView.m, src/XYPlotView.m:
+	Use myDataStored[] in trace classes
+
+2002-07-29  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.m:
+	Add comments to clarify the roles of ScopeAppDelegate and
+	ScopeController
+
+	* src/ScopeAppDelegate.h, src/ScopeAppDelegate.m:
+	Remove myController from the delegate, because the delegate does not
+	own the ScopeController object(s).
+
+2002-07-29  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/ScopeAppDelegate.m: Changed controller to myController.
+
+	* src/ScopeAppDelegate.h:
+	Added myController var so Delegate class remembers the controller
+	it's using.
+
+	* src/TraceView.m:
+	Added temporary override of the [self display] crash.
+
+2002-07-22  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/GNUmakefile: Oops. Had wrong slash. Fixed.
+
+	* src/GNUmakefile: Fixed location of English.proj
+
+	* src/ScopeView.m, src/XYPlotView.m, src/ScopeController.m:
+	Added empty line at end of file (one less warning).
+
+2002-07-22  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/main.m: Manually create delegate object and load MainMenu.nib
+
+	* src/ScopeAppDelegate.h, src/ScopeAppDelegate.m:
+	Remove unnecessary notification from delegate, move code from
+	awakeFromNib to applicationDidFinishLaunching to prevent it being
+	called twice on macosx
+
+2002-07-21  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/GNUmakefile: Small fix in comments.
+
+	* src/ScopeAppDelegate.m:
+	Removed applicationDidFinishLaunching-related things.
+
+	* src/ScopeAppDelegate.m:
+	Implemented applicationWillFinishLaunching as a way for scopeapp to
+	display a window on the screen.
+
+	* src/ScopeAppDelegate.h:
+	Added methods to respond to applicationWillFinishLaunching and
+	applicationDidFinishLaunching
+
+	* src/main.m:
+	Used ScopeAppDelegate as application delegate to get something on
+	the screen(quick fix).
+
+2002-07-21  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/TestSampler.m, src/TestSampler.h: Fix boolean confusion
+
+2002-07-20  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/TestSampler.h:
+	Defined true to be YES and false to be NO for GNUstep to compile it.
+
+2002-07-19  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeView.h, src/ScopeView.m, src/XYPlotView.h, src/XYPlotView.m:
+	Add stubs for functions to create display controls
+
+	* src/GNUmakefile: Add new header file, localised files
+
+	* src/ScopeController.h, src/ScopeController.m:
+	ScopeController now programatically creates its windows, to
+	avoid the nib vs. gmodel problem
+
+	* English.lproj/Localizable.strings, src/QuicktimeSampler.m,
+	src/ScopeAppGlobals.h:
+	Use new macro (borrowed from GNUMail) to mark localizable strings
+	in source code
+
+	* update-l10n.pl: Add script to auto-generate Localizable.strings
+
+2002-07-18  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* src/GNUmakefile: Initial makefile (nearly works)
+
+	* GNUmakefile: Makefile moved into src
+
+	* src/GNUmakefile: A bare version of a makefile (doesn't work yet)
+
+2002-07-18  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/TestSampler.m, src/XYPlotView.m, src/ScopeView.m:
+	Minor fixes for compiling on linux
+
+	* src/InputSampler.h: Work around forward reference bug in GCC
+
+	* src/main.m:
+	moved from top level, changed #import to work in gnustep too
+
+	* main.m: Moved to src directory
+
+2002-07-17  Rafal Kolanski  <xaphiosis@users.sourceforge.net>
+
+	* GNUmakefile: A bare version of a makefile (doesn't work yet)
+
+2002-07-15  Philip Derrin  <narge@users.sourceforge.net>
+
+	* MacCRO X.pbproj/project.pbxproj: Added XYPlotView.[mh]
+
+	* src/XYPlotView.h, src/XYPlotView.m: Initial X/Y plot implementation
+
+	* src/ScopeController.h, src/ScopeController.m:
+	Update for new interface layout and to react to switching mode tabs
+
+	* src/ScopeView.h, src/ScopeView.m:
+	Make previously internal triggering function public (it's called by
+	TraceView)
+
+	* src/TraceView.h, src/TraceView.m:
+	Fix copyright notice, add stub for trigger function which is called by
+	processData but only really used by the oscilloscope
+
+2002-06-29  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/ScopeView.h, src/ScopeView.m, src/TraceView.h, src/TraceView.m:
+	Moved non-oscilloscope-specific functions into TraceView.m,
+	new parent class of ScopeView
+
+2002-06-25  Philip Derrin  <narge@users.sourceforge.net>
+
+	* src/CoreAudioSampler.h, src/CoreAudioSampler.m, src/InputSampler.h,
+	src/QuicktimeSampler.h, src/QuicktimeSampler.m, src/ScopeAppDelegate.h,
+	src/ScopeAppDelegate.m, src/ScopeController.h, src/ScopeController.m,
+	src/ScopeView.h, src/ScopeView.m, src/TestSampler.h, src/TestSampler.m:
+	Fixed several race conditions, defined type for data samples (currently 
+	a float), fixed a few bugs in ScopeView, cleaned up the samplers
+
+2002-06-19  Philip Derrin  <philipd@cse.unsw.edu.au>
+
+	* src/ScopeAppDelegate.h, src/ScopeController.h, src/ScopeView.h,
+	src/TestSampler.h, License.rtf, Readme.rtf, src/CoreAudioSampler.h,
+	src/CoreAudioSampler.m, src/InputSampler.h, src/QuicktimeSampler.h,
+	src/QuicktimeSampler.m, src/ScopeAppDelegate.m, src/ScopeController.m,
+	src/ScopeView.m, src/TestSampler.m:
+	Changed license to GPL; updated headers and License.rtf to reflect this.
+
+	* src/ScopeView.m:
+	Fixed race condition in ScopeView's drawing thread; fixed minor
+	interface bugs
+
+	* src/ScopeView.h: Fixed race condition in ScopeView's drawing thread
+
+	* src/TestSampler.h:
+	Fixed race condition which prevented new thread from starting
+
+	* src/TestSampler.m:
+	Fixed race condition which prevented new thread from starting;
+	removed useless paused state
+
+2002-06-18  Philip Derrin  <philipd@cse.unsw.edu.au>
+
+	* .cvsignore: Added OSX Finder's .DS_Store files
+
+	* .cvsignore: Ignore nib backup files

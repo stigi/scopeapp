@@ -1,0 +1,41 @@
+/** main.m **/
+
+
+/** PortAudioSampler.m **/
+
+"Couldn't start recording sound." = "Couldn't start recording sound.";
+"PortAudio returned error: %s" = "PortAudio returned error: %s";
+"OK" = "OK";
+"Couldn't stop recording sound." = "Couldn't stop recording sound.";
+"Couldn't open sound input device." = "Couldn't open sound input device.";
+"Couldn't find sound input device." = "Couldn't find sound input device.";
+"Select a sound input device in the Sound panel of System Preferences." = "Select a sound input device in the Sound panel of System Preferences.";
+"Make sure your sound card is configured correctly." = "Make sure your sound card is configured correctly.";
+
+/** ScopeAppDefaults.m **/
+
+
+/** ScopeAppDelegate.m **/
+
+
+/** ScopeController.m **/
+
+
+/** ScopeView.m **/
+
+
+/** SpectrumView.m **/
+
+
+/** TestSampler.m **/
+
+
+/** TracePath.m **/
+
+
+/** TraceView.m **/
+
+
+/** XYPlotView.m **/
+
+

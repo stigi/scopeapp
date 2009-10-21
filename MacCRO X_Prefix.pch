@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'MacCRO' target in the 'MacCRO' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
